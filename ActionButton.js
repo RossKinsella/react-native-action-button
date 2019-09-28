@@ -164,8 +164,8 @@ export default class ActionButton extends Component {
       backgroundColor: this.anim.interpolate({
         inputRange: [0, 1],
         outputRange: [
-          this.props.buttonColor,
-          this.props.btnOutRange || this.props.buttonColor
+          this.props.glowColor,
+          this.props.buttonColor
         ]
       }),
       width: this.props.size,
@@ -363,6 +363,7 @@ ActionButton.propTypes = {
   bgColor: PropTypes.string,
   bgOpacity: PropTypes.number,
   buttonColor: PropTypes.string,
+  glowColor: PropTypes.string,
   buttonTextStyle: Text.propTypes.style,
   buttonText: PropTypes.string,
 
@@ -395,6 +396,7 @@ ActionButton.defaultProps = {
   bgColor: "transparent",
   bgOpacity: 1,
   buttonColor: "rgba(0,0,0,1)",
+  glowColor: undefined,
   buttonTextStyle: {},
   buttonText: "+",
   spacing: 20,
