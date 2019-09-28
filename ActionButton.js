@@ -27,7 +27,36 @@ export default class ActionButton extends Component {
     };
 
     this.anim = new Animated.Value(props.active ? 1 : 0);
+    this.glowAnim = new Animated.Value(0);
     this.timeout = null;
+    this.glow = this.glow.bind(this);
+    this.onGlowComplete = this.onGlowComplete.bind(this);
+    this.glow();
+  }
+
+  onGlowComplete() {
+    if (this.props.glowColor) {
+      this.glow()
+    }
+  }
+
+  glow() {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(this.glowAnim, {
+          toValue: 1,
+          duration: 1000,
+          delay: 1000,
+        }),
+        Animated.timing(this.glowAnim, {
+          toValue: 0,
+          duration: 1000
+        })
+      ]),
+      {
+        iterations: 2
+      }
+    ).start(this.onGlowComplete)
   }
 
   componentDidMount() {
@@ -127,16 +156,16 @@ export default class ActionButton extends Component {
           ]}
         >
           {this.state.active &&
-            !this.props.backgroundTappable &&
-            this._renderTappableBackground()}
+          !this.props.backgroundTappable &&
+          this._renderTappableBackground()}
 
           {this.props.verticalOrientation === "up" &&
-            this.props.children &&
-            this._renderActions()}
+          this.props.children &&
+          this._renderActions()}
           {this._renderMainButton()}
           {this.props.verticalOrientation === "down" &&
-            this.props.children &&
-            this._renderActions()}
+          this.props.children &&
+          this._renderActions()}
         </View>
       </View>
     );
@@ -160,36 +189,51 @@ export default class ActionButton extends Component {
       ]
     };
 
+    const size = this.glowAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [
+        this.props.size,
+        this.props.size
+      ]
+    })
+    const borderRadius = this.glowAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [
+        this.props.size / 2,
+        this.props.size / 2
+      ]
+    })
+
     const wrapperStyle = {
-      backgroundColor: this.anim.interpolate({
+      backgroundColor: this.glowAnim.interpolate({
         inputRange: [0, 1],
         outputRange: [
-          this.props.glowColor,
-          this.props.buttonColor
+          this.props.buttonColor,
+          this.props.glowColor || this.props.buttonColor
         ]
       }),
-      width: this.props.size,
-      height: this.props.size,
-      borderRadius: this.props.size / 2
+      width: size,
+      height: size,
+      borderRadius: borderRadius
     };
 
     const buttonStyle = {
-      width: this.props.size,
-      height: this.props.size,
-      borderRadius: this.props.size / 2,
+      width: size,
+      height: size,
+      borderRadius: borderRadius,
       alignItems: "center",
       justifyContent: "center"
     };
 
     const Touchable = getTouchableComponent(this.props.useNativeFeedback);
     const parentStyle = isAndroid &&
-      this.props.fixNativeFeedbackRadius
+    this.props.fixNativeFeedbackRadius
       ? {
-          right: this.props.offsetX,
-          zIndex: this.props.zIndex,
-          borderRadius: this.props.size / 2,
-          width: this.props.size
-        }
+        right: this.props.offsetX,
+        zIndex: this.props.zIndex,
+        borderRadius: this.props.size / 2,
+        width: this.props.size
+      }
       : { marginHorizontal: this.props.offsetX, zIndex: this.props.zIndex };
 
     return (
@@ -335,7 +379,7 @@ export default class ActionButton extends Component {
 
     setTimeout(() => {
       if (this.mounted) {
-        this.setState({ active: false, resetToken: this.state.resetToken });  
+        this.setState({ active: false, resetToken: this.state.resetToken });
       }
     }, 250);
   }
