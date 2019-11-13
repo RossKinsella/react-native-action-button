@@ -45,12 +45,12 @@ export default class ActionButton extends Component {
       Animated.sequence([
         Animated.timing(this.glowAnim, {
           toValue: 1,
-          duration: 1000,
-          delay: 1000,
+          duration: 350,
+          delay: 350,
         }),
         Animated.timing(this.glowAnim, {
           toValue: 0,
-          duration: 1000
+          duration: 350
         })
       ]),
       {
